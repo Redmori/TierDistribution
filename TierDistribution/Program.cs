@@ -1,4 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
+// See https://aka.ms/new-console-template for more information
 using TierDistribution;
 
 
@@ -27,8 +27,7 @@ Calculator.loot.Add(new Item(Slot.Helm, Status.Normal));
 Output.ToConsole(Calculator.raiders);
 
 
-//Input.ReadSheet();
-var data = await Input.ReadData("14fm2C7bpPJ7EzGTBdYFXHqL7KpSHGCpf8ktuNgLpn9o", "AIzaSyAIpz0Rm9ywnetyh76B49uEesbo1jYQk6Y", 0);
+Input.ReadSheet();
 
 ////GENERATE RANDOM ITEMS
 //Random random = new Random();
