@@ -104,6 +104,9 @@ namespace TierDistribution
             if (numberOfTier < 4 && sum >= 4)
                 result += tierValue[1];
 
+
+            //TODO: compare vault options
+
             return result;
         }
 

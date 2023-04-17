@@ -24,6 +24,11 @@ Calculator.loot.Add(new Item(Slot.Shoulder, Status.Normal));
 Calculator.loot.Add(new Item(Slot.Helm, Status.Normal));
 
 
+Output.ToConsole(Calculator.raiders);
+
+
+//Input.ReadSheet();
+
 ////GENERATE RANDOM ITEMS
 //Random random = new Random();
 //for (int i = 0; i < 10; i++)

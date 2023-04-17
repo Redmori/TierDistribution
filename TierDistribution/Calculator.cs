@@ -21,7 +21,7 @@ namespace TierDistribution
             foreach(Raider raider in raiders)
             {
                 if(index == 0)
-                    Console.WriteLine(raiders.IndexOf(raider));
+                    Console.WriteLine(Math.Round((float)raiders.IndexOf(raider)/(float)raiders.Count*100) + "%");
                 if (index == 1)
                     Console.WriteLine("...");
                 //Console.WriteLine(raider.name + " - index: " + index);
