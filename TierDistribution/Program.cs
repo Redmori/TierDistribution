@@ -27,7 +27,7 @@ Calculator.loot.Add(new Item(Slot.Helm, Status.Normal));
 Output.ToConsole(Calculator.raiders);
 
 
-//Input.ReadSheet();
+Input.ReadSheet();
 
 ////GENERATE RANDOM ITEMS
 //Random random = new Random();

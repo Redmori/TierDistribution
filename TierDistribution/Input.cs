@@ -19,45 +19,74 @@ namespace TierDistribution
 
         public static void ReadSheet()
         {
-            var data = ReadData("AIzaSyBw_lIFMnJppjdhbKtNABGZQbjXS_lsDJw", "Testsheet!B1:C2");
-            foreach (var row in data)
+
+            var sheetsService = new SheetsService(new BaseClientService.Initializer
+            {
+                ApiKey = "AIzaSyAIpz0Rm9ywnetyh76B49uEesbo1jYQk6Y"
+            });
+
+            var spreadsheetId = "14fm2C7bpPJ7EzGTBdYFXHqL7KpSHGCpf8ktuNgLpn9o";
+            // it's possible to add range to this variable 
+            var sheetName = "Tier&Embel";
+
+            // create the request to retrieve the data
+            var request = sheetsService.Spreadsheets.Values.Get(spreadsheetId, sheetName);
+
+            // execute the request and get the response
+            var response = request.Execute();
+
+            // extract the values from the response
+            var values = response.Values;
+
+            // iterate over the values and do something with them
+            foreach (var row in values)
             {
                 foreach (var cell in row)
                 {
-                    Console.Write("{0}\t", cell);
+                    Console.Write($"{cell}\t");
                 }
                 Console.WriteLine();
             }
         }
+            //    var data = ReadData("AIzaSyBw_lIFMnJppjdhbKtNABGZQbjXS_lsDJw", "Testsheet!B1:C2");
+            //    foreach (var row in data)
+            //    {
+            //        foreach (var cell in row)
+            //        {
+            //            Console.Write("{0}\t", cell);
+            //        }
+            //        Console.WriteLine();
+            //    }
+            //}
 
-        public static IList<IList<Object>> ReadData(string spreadsheetId, string range)
-        {
-            UserCredential credential;
+            //public static IList<IList<Object>> ReadData(string spreadsheetId, string range)
+            //{
+            //    UserCredential credential;
 
-            using (var stream = new FileStream("client_secret_882081320166-teh8os6ppeli8drtrjseo448a4c9mf0v.apps.googleusercontent.com.json", FileMode.Open, FileAccess.Read))
-            {
-                string credPath = "token.json";
+            //    using (var stream = new FileStream("client_secret_882081320166-teh8os6ppeli8drtrjseo448a4c9mf0v.apps.googleusercontent.com.json", FileMode.Open, FileAccess.Read))
+            //    {
+            //        string credPath = "token.json";
 
-                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
-                    Scopes,
-                    "user",
-                    CancellationToken.None,
-                    new FileDataStore(credPath, true)).Result;
-            }
+            //        credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+            //            GoogleClientSecrets.Load(stream).Secrets,
+            //            Scopes,
+            //            "user",
+            //            CancellationToken.None,
+            //            new FileDataStore(credPath, true)).Result;
+            //    }
 
-            var service = new SheetsService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = ApplicationName,
-            });
+            //    var service = new SheetsService(new BaseClientService.Initializer()
+            //    {
+            //        HttpClientInitializer = credential,
+            //        ApplicationName = ApplicationName,
+            //    });
 
-            SpreadsheetsResource.ValuesResource.GetRequest request =
-                    service.Spreadsheets.Values.Get(spreadsheetId, range);
+            //    SpreadsheetsResource.ValuesResource.GetRequest request =
+            //            service.Spreadsheets.Values.Get(spreadsheetId, range);
 
-            ValueRange response = request.Execute();
+            //    ValueRange response = request.Execute();
 
-            return response.Values;
+            //    return response.Values;
+            //}
         }
-    }
 }
