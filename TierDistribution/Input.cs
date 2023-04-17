@@ -33,7 +33,7 @@ namespace TierDistribution
             });
 
             var spreadsheetId = "14fm2C7bpPJ7EzGTBdYFXHqL7KpSHGCpf8ktuNgLpn9o";
-            // it's possible to add range to this variable 
+            // it's possible to add range to this variable like A1:F31
             var sheetName = "Tier&Embel!A1:F31";
 
             // create the request to retrieve the data
