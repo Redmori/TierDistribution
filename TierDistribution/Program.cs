@@ -28,6 +28,7 @@ Output.ToConsole(Calculator.raiders);
 
 
 //Input.ReadSheet();
+var data = await Input.ReadData("14fm2C7bpPJ7EzGTBdYFXHqL7KpSHGCpf8ktuNgLpn9o", "AIzaSyAIpz0Rm9ywnetyh76B49uEesbo1jYQk6Y", 0);
 
 ////GENERATE RANDOM ITEMS
 //Random random = new Random();
