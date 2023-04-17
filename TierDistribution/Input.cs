@@ -1,4 +1,4 @@
-﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4.Data;
 using Google.Apis.Sheets.v4;
@@ -26,37 +26,31 @@ namespace TierDistribution
 
         public static async Task<List<List<string>>> ReadData(string spreadsheetId, string apiKey, int sheetIndex)
         {
-            using var client = new HttpClient();
 
-            var response = await client.GetAsync($"https://sheets.googleapis.com/v4/spreadsheets/{spreadsheetId}/?key={apiKey}&includeGridData=true");
-
-            if (!response.IsSuccessStatusCode)
+            var sheetsService = new SheetsService(new BaseClientService.Initializer
             {
-                throw new Exception($"Failed to read data from Google Sheets API. Status code: {response.StatusCode}");
-            }
+                ApiKey = "AIzaSyAIpz0Rm9ywnetyh76B49uEesbo1jYQk6Y"
+            });
 
-            var content = await response.Content.ReadAsStringAsync();
+            var spreadsheetId = "14fm2C7bpPJ7EzGTBdYFXHqL7KpSHGCpf8ktuNgLpn9o";
+            // it's possible to add range to this variable 
+            var sheetName = "Tier&Embel";
 
-            Console.WriteLine(content);
+            // create the request to retrieve the data
+            var request = sheetsService.Spreadsheets.Values.Get(spreadsheetId, sheetName);
 
-            var sheetsResponse = JsonConvert.DeserializeObject<GoogleSheetsApiResponse>(content);
+            // execute the request and get the response
+            var response = request.Execute();
 
-            if (sheetIndex >= sheetsResponse.Sheets.Count)
+            // extract the values from the response
+            var values = response.Values;
+
+            // iterate over the values and do something with them
+            foreach (var row in values)
             {
-                throw new Exception($"Invalid sheet index: {sheetIndex}");
-            }
-
-            var rowData = sheetsResponse.Sheets[sheetIndex].Data.RowData;
-
-            var data = new List<List<string>>();
-
-            foreach (var row in rowData)
-            {
-                var rowDataList = new List<string>();
-
-                foreach (var cell in row.Values)
+                foreach (var cell in row)
                 {
-                    rowDataList.Add(cell.FormattedValue ?? "");
+                    Console.Write($"{cell}\t");
                 }
 
                 data.Add(rowDataList);
@@ -64,78 +58,45 @@ namespace TierDistribution
 
             return data;
         }
+            //    var data = ReadData("AIzaSyBw_lIFMnJppjdhbKtNABGZQbjXS_lsDJw", "Testsheet!B1:C2");
+            //    foreach (var row in data)
+            //    {
+            //        foreach (var cell in row)
+            //        {
+            //            Console.Write("{0}\t", cell);
+            //        }
+            //        Console.WriteLine();
+            //    }
+            //}
 
-        private class GoogleSheetsApiResponse
-        {
-            public List<GoogleSheetsApiSheet> Sheets { get; set; }
+            //public static IList<IList<Object>> ReadData(string spreadsheetId, string range)
+            //{
+            //    UserCredential credential;
+
+            //    using (var stream = new FileStream("client_secret_882081320166-teh8os6ppeli8drtrjseo448a4c9mf0v.apps.googleusercontent.com.json", FileMode.Open, FileAccess.Read))
+            //    {
+            //        string credPath = "token.json";
+
+            //        credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+            //            GoogleClientSecrets.Load(stream).Secrets,
+            //            Scopes,
+            //            "user",
+            //            CancellationToken.None,
+            //            new FileDataStore(credPath, true)).Result;
+            //    }
+
+            //    var service = new SheetsService(new BaseClientService.Initializer()
+            //    {
+            //        HttpClientInitializer = credential,
+            //        ApplicationName = ApplicationName,
+            //    });
+
+            //    SpreadsheetsResource.ValuesResource.GetRequest request =
+            //            service.Spreadsheets.Values.Get(spreadsheetId, range);
+
+            //    ValueRange response = request.Execute();
+
+            //    return response.Values;
+            //}
         }
-
-        private class GoogleSheetsApiSheet
-        {
-            public GoogleSheetsApiSheetData Data { get; set; }
-        }
-
-        private class GoogleSheetsApiSheetData
-        {
-            public List<GoogleSheetsApiRow> RowData { get; set; }
-        }
-
-        private class GoogleSheetsApiRow
-        {
-            public List<GoogleSheetsApiCell> Values { get; set; }
-        }
-
-        private class GoogleSheetsApiCell
-        {
-            public string FormattedValue { get; set; }
-        }
-
-
-
-        //private static readonly string[] Scopes = { SheetsService.Scope.SpreadsheetsReadonly };
-        //private static readonly string ApplicationName = "TierDistribution";
-
-        //public static void ReadSheet()
-        //{
-        //    var data = ReadData("14fm2C7bpPJ7EzGTBdYFXHqL7KpSHGCpf8ktuNgLpn9o", "Testsheet!B1:C2");
-        //    foreach (var row in data)
-        //    {
-        //        foreach (var cell in row)
-        //        {
-        //            Console.Write("{0}\t", cell);
-        //        }
-        //        Console.WriteLine();
-        //    }
-        //}
-
-        //public static IList<IList<Object>> ReadData(string spreadsheetId, string range)
-        //{
-        //    UserCredential credential;
-
-        //    using (var stream = new FileStream("client_secret_882081320166-teh8os6ppeli8drtrjseo448a4c9mf0v.apps.googleusercontent.com.json", FileMode.Open, FileAccess.Read))
-        //    {
-        //        string credPath = "token.json";
-
-        //        credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-        //            GoogleClientSecrets.Load(stream).Secrets,
-        //            Scopes,
-        //            "user",
-        //            CancellationToken.None,
-        //            new FileDataStore(credPath, true)).Result;
-        //    }
-
-        //    var service = new SheetsService(new BaseClientService.Initializer()
-        //    {
-        //        HttpClientInitializer = credential,
-        //        ApplicationName = ApplicationName,
-        //    });
-
-        //    SpreadsheetsResource.ValuesResource.GetRequest request =
-        //            service.Spreadsheets.Values.Get(spreadsheetId, range);
-
-        //    ValueRange response = request.Execute();
-
-        //    return response.Values;
-        //}
-    }
 }
