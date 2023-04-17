@@ -24,7 +24,7 @@ namespace TierDistribution
 
         //}
 
-        public static async Task<List<List<string>>> ReadData(string spreadsheetId, string apiKey, int sheetIndex)
+        public static void ReadSheet()
         {
 
             var sheetsService = new SheetsService(new BaseClientService.Initializer
@@ -45,6 +45,8 @@ namespace TierDistribution
             // extract the values from the response
             var values = response.Values;
 
+            var data = new List<List<string>>();
+
             // iterate over the values and do something with them
             foreach (var row in values)
             {
@@ -52,11 +54,7 @@ namespace TierDistribution
                 {
                     Console.Write($"{cell}\t");
                 }
-
-                data.Add(rowDataList);
             }
-
-            return data;
         }
             //    var data = ReadData("AIzaSyBw_lIFMnJppjdhbKtNABGZQbjXS_lsDJw", "Testsheet!B1:C2");
             //    foreach (var row in data)
