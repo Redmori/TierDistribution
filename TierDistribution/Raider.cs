@@ -58,6 +58,7 @@ namespace TierDistribution
             role = role_;
             gear = gear_;
             tierValue = tierValue_;
+            tierValue[1] -= tierValue[0]; //clause that the column is 2p+4p
 
             numberOfTier = CalculateNumberOfTier();
         }

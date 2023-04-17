@@ -56,7 +56,11 @@ namespace TierDistribution
                 Console.ForegroundColor = GetConsoleColor(raider.gear[(int)Slot.Gloves]);
                 Console.Write(raider.gear[(int)Slot.Gloves] == Status.Empty ? "-".PadRight(10) : raider.gear[(int)Slot.Gloves].ToString().PadRight(10));
                 Console.ForegroundColor = GetConsoleColor(raider.gear[(int)Slot.Legs]);
-                Console.WriteLine(raider.gear[(int)Slot.Legs] == Status.Empty ? "-".PadRight(10) : raider.gear[(int)Slot.Legs].ToString().PadRight(10));
+                Console.Write(raider.gear[(int)Slot.Legs] == Status.Empty ? "-".PadRight(10) : raider.gear[(int)Slot.Legs].ToString().PadRight(10));
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write(raider.tierValue[0].ToString().PadRight(10));
+                Console.Write(raider.tierValue[1].ToString().PadRight(10));
+                Console.WriteLine();
             }
 
             Console.ForegroundColor = ConsoleColor.White;

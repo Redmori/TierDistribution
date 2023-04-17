@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Globalization;
 
 namespace TierDistribution
 {
@@ -24,7 +25,7 @@ namespace TierDistribution
 
         //}
 
-        public static void ReadSheet()
+        public static List<Raider>[] ReadSheet()
         {
 
             var sheetsService = new SheetsService(new BaseClientService.Initializer
@@ -34,7 +35,7 @@ namespace TierDistribution
 
             var spreadsheetId = "14fm2C7bpPJ7EzGTBdYFXHqL7KpSHGCpf8ktuNgLpn9o";
             // it's possible to add range to this variable 
-            var sheetName = "Tier&Embel!A1:F31";
+            var sheetName = "Testsheet!A1:R31";
 
             // create the request to retrieve the data
             var request = sheetsService.Spreadsheets.Values.Get(spreadsheetId, sheetName);
@@ -45,21 +46,91 @@ namespace TierDistribution
             // extract the values from the response
             var values = response.Values;
 
-            var data = new List<List<string>>();
+            //var data = new List<List<string>>();
 
             // iterate over the values and do something with them
-            var index = 0;
+
+            List<Raider>[] raid = new List<Raider>[4];
+            List<Raider> tokenGroup = new List<Raider>();
+            int i = -1;
+            int k = 0;
+            bool findingItems = false;
             foreach (var row in values)
-            {
-                Console.WriteLine($"---------------------------WE'RE ON ROW:{index}-------------------------------\n");
-                index++;
-                foreach (var cell in row)
+            {                
+                //READ RAIDERS
+                if (row[0] != "" && "DreadfulMysticVeneratedZenith-".Contains((string)row[0]))
                 {
-                    Console.Write($"{cell}\t");
+                    if (i >= 0)
+                        raid[i] = tokenGroup;
+                    i++;
+                    tokenGroup = new List<Raider>();
                 }
-                Console.WriteLine("\n");
+                else if (row[1] != "")
+                {
+                    tokenGroup.Add(new Raider((string)row[1], Class.Warrior, Role.Damage, new Status[] { StringToStatus((string)row[2]), StringToStatus((string)row[3]), StringToStatus((string)row[4]), StringToStatus((string)row[5]), StringToStatus((string)row[6]) }, new float[] { float.Parse(((string)row[11]).TrimEnd('%'), NumberStyles.Float, CultureInfo.InvariantCulture), float.Parse(((string)row[12]).TrimEnd('%'), NumberStyles.Float, CultureInfo.InvariantCulture) }));
+                }
+
+
+                if (findingItems && row[k] != "")
+                {
+                    Calculator.loot.Add(new Item(StringToSlot((string)row[k]), StringToStatus((string)row[k + 2])));
+                }
+
+                //READ LOOT
+                if (!findingItems)
+                {
+                    foreach (var cell in row)
+                    {
+                        if (((string)row[k]).Equals("Slot") && ((string)row[k + 1]).Equals("Token") && ((string)row[k + 2]).Equals("ilvl"))
+                        {
+                            findingItems = true;
+                            break;
+                        }
+                        k++;
+                    }
+                }
+
+
+
+                //foreach (var cell in row)
+                //{
+                //    Console.Write($"{cell}\t");
+                //}
+                //Console.WriteLine("\n");
             }
+
+            return raid;
         }
+
+        private static Slot StringToSlot(string str)
+        {
+            switch (str)
+            {
+                case "Head": return Slot.Helm;
+                case "Shoulders": return Slot.Shoulder;
+                case "Chest": return Slot.Chest;
+                case "Gloves": return Slot.Gloves;
+                case "Legs": return Slot.Legs;
+            }
+            Console.WriteLine("Incorrect loot detected");
+            return Slot.Helm;
+        }
+
+        private static Status StringToStatus(string str)
+        {
+            switch(str)
+            {
+                case "-": return Status.Empty;
+                case "LFR": return Status.LFR;
+                case "Normal": return Status.Normal;
+                case "Heroic": return Status.Heroic;
+                case "Mythic": return Status.Mythic;
+            }
+
+            return Status.Empty;
+        }
+
+
             //    var data = ReadData("AIzaSyBw_lIFMnJppjdhbKtNABGZQbjXS_lsDJw", "Testsheet!B1:C2");
             //    foreach (var row in data)
             //    {
