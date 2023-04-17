@@ -34,7 +34,7 @@ namespace TierDistribution
 
             var spreadsheetId = "14fm2C7bpPJ7EzGTBdYFXHqL7KpSHGCpf8ktuNgLpn9o";
             // it's possible to add range to this variable 
-            var sheetName = "Tier&Embel";
+            var sheetName = "Tier&Embel!A1:F31";
 
             // create the request to retrieve the data
             var request = sheetsService.Spreadsheets.Values.Get(spreadsheetId, sheetName);
@@ -48,12 +48,16 @@ namespace TierDistribution
             var data = new List<List<string>>();
 
             // iterate over the values and do something with them
+            var index = 0;
             foreach (var row in values)
             {
+                Console.WriteLine($"---------------------------WE'RE ON ROW:{index}-------------------------------\n");
+                index++;
                 foreach (var cell in row)
                 {
                     Console.Write($"{cell}\t");
                 }
+                Console.WriteLine("\n");
             }
         }
             //    var data = ReadData("AIzaSyBw_lIFMnJppjdhbKtNABGZQbjXS_lsDJw", "Testsheet!B1:C2");
