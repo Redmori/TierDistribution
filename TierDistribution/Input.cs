@@ -25,6 +25,27 @@ namespace TierDistribution
 
         //}
 
+
+        //public static void WriteSheet()
+        //{
+        //    var sheetsService = new SheetsService(new BaseClientService.Initializer
+        //    {
+        //        ApiKey = "AIzaSyAIpz0Rm9ywnetyh76B49uEesbo1jYQk6Y"
+        //    });
+
+        //    var spreadsheetId = "14fm2C7bpPJ7EzGTBdYFXHqL7KpSHGCpf8ktuNgLpn9o";
+        //    var range = "Testsheet!A33:B34";
+        //    var values = new ValueRange
+        //    {
+        //        Values = new List<IList<object>> {
+        //        new List<object> { "Value1A", "Value1B" },
+        //        new List<object> { "Value2A", "Value2B" },
+        //        },
+        //    };
+        //    var updateRequest = sheetsService.Spreadsheets.Values.Update(values, spreadsheetId, range);
+        //    updateRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
+        //    var updateResponse = updateRequest.Execute();
+        //}
         public static List<Raider>[] ReadSheet()
         {
 
@@ -71,12 +92,12 @@ namespace TierDistribution
                 }
 
 
+                //READ LOOT
                 if (findingItems && row[k] != "")
                 {
                     Calculator.loot.Add(new Item(StringToSlot((string)row[k]), StringToStatus((string)row[k + 2])));
                 }
 
-                //READ LOOT
                 if (!findingItems)
                 {
                     foreach (var cell in row)

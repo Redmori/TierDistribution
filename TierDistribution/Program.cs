@@ -27,52 +27,11 @@ using TierDistribution;
 List<Raider>[] raid = Input.ReadSheet();
 Calculator.raiders = raid[3];
 
-
-
-
-////GENERATE RANDOM ITEMS
-//Random random = new Random();
-//for (int i = 0; i < 10; i++)
-//{
-//    Slot slot = (Slot)random.Next(Enum.GetValues(typeof(Slot)).Length);
-//    Status status = (Status)random.Next(Enum.GetValues(typeof(Status)).Length);
-//    Calculator.loot.Add(new Item(slot, status));
-//}
-
-////GENERATE RANDOM RAIDERS
-//random = new Random();
-//for (int i = 0; i < 5; i++)
-//{
-//    string name = "Raider" + (i + 1).ToString();
-//    Class playerClass = (Class)random.Next(Enum.GetValues(typeof(Class)).Length);
-//    Role role = (Role)random.Next(Enum.GetValues(typeof(Role)).Length);
-//    Status[] gear = new Status[5];
-//    float[] stats = new float[2];
-//    for (int j = 0; j < 5; j++)
-//    {
-//        if (random.NextDouble() < 0.6)
-//        {
-//            gear[j] = Status.Empty;
-//        }
-//        else
-//        {
-//            gear[j] = (Status)random.Next(1, Enum.GetValues(typeof(Status)).Length);
-//        }
-//    }
-//    for (int j = 0; j < 2; j++)
-//    {
-//        stats[j] = (float)random.NextDouble() * 10.0f + 10.0f;
-//    }
-//    Calculator.raiders.Add(new Raider(name, playerClass, role, gear, stats));
-//}
-
-
-//foreach (Raider raider in Calculator.raiders)
-//    Console.WriteLine(raider.ToString());
-
+Output.ToConsole(raid[3]);
 
 Calculator.GiveItems();
 
+Calculator.DistributeLoot(Calculator.bestDistr);
 Output.ToConsole(raid[3]);
 
 Console.WriteLine("Best match found: " + Calculator.highest);

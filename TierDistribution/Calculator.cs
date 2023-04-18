@@ -21,9 +21,9 @@ namespace TierDistribution
             foreach(Raider raider in raiders)
             {
                 if(index == 0)
-                    Console.WriteLine(Math.Round((float)raiders.IndexOf(raider)/(float)raiders.Count*100) + "%");
+                    Console.Write(Math.Round((float)raiders.IndexOf(raider)/(float)raiders.Count*100) + "%");
                 if (index == 1)
-                    Console.WriteLine("...");
+                    Console.Write(".");
                 //Console.WriteLine(raider.name + " - index: " + index);
                 //raider.GiveItem(loot[index]);
                 //distr.Add(raider);
@@ -58,8 +58,7 @@ namespace TierDistribution
         public static float Calculate(List<Raider> distr)
         {
             //Console.WriteLine("test: " + distr.Count);  
-            for(int i = 0; i < distr.Count; i++)
-                distr[i].GiveItem(loot[i]);
+            DistributeLoot(distr);
 
 
             float sum = 0f;
@@ -69,6 +68,12 @@ namespace TierDistribution
                 raider.loot.Clear();
             }
             return sum;
+        }
+
+        public static void DistributeLoot(List<Raider> distr)
+        {
+            for (int i = 0; i < distr.Count; i++)
+                distr[i].GiveItem(loot[i]);
         }
 
         public static bool IsUpgrade(Raider raider, Item item, List<Raider> distr)
