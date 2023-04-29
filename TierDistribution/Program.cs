@@ -23,16 +23,15 @@ using TierDistribution;
 
 //Output.ToConsole(Calculator.raiders);
 
+(List<Raider>[] raid, List<Item>[] loot) = Input.ReadSheet();
+//Calculator.raiders = raid[3];
 
-List<Raider>[] raid = Input.ReadSheet();
-Calculator.raiders = raid[3];
+Output.ToConsole(raid);
 
-Output.ToConsole(raid[3]);
+List<Raider>[] maxDistr = Calculator.GiveItems(raid, loot);
 
-Calculator.GiveItems();
+Calculator.DistributeLoot(loot, maxDistr);
+Output.ToConsole(raid);
 
-Calculator.DistributeLoot(Calculator.bestDistr);
-Output.ToConsole(raid[3]);
-
-Console.WriteLine("Best match found: " + Calculator.highest);
-Console.WriteLine(Calculator.DistributionToString(Calculator.bestDistr));
+//Console.WriteLine("Best match found: " + Calculator.highest);
+Console.WriteLine(Calculator.DistributionToString(loot, maxDistr));

@@ -46,7 +46,7 @@ namespace TierDistribution
         //    updateRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
         //    var updateResponse = updateRequest.Execute();
         //}
-        public static List<Raider>[] ReadSheet()
+        public static (List<Raider>[],List<Item>[]) ReadSheet()
         {
 
             var sheetsService = new SheetsService(new BaseClientService.Initializer
@@ -56,7 +56,7 @@ namespace TierDistribution
 
             var spreadsheetId = "14fm2C7bpPJ7EzGTBdYFXHqL7KpSHGCpf8ktuNgLpn9o";
             // it's possible to add range to this variable 
-            var sheetName = "Testsheet!A1:R31";
+            var sheetName = "Testsheet!A1:Z31";
 
             // create the request to retrieve the data
             var request = sheetsService.Spreadsheets.Values.Get(spreadsheetId, sheetName);
@@ -69,11 +69,27 @@ namespace TierDistribution
 
             //var data = new List<List<string>>();
 
+            // Data columns:
+            int indexName = 1;
+            int indexClass = 2;
+            int indexRole = 3;
+            int indexGearHelm = 4;
+            int indexTier2p = 13;
+            int indexTier4p = indexTier2p + 1;
+
+
+
             // iterate over the values and do something with them
 
             List<Raider>[] raid = new List<Raider>[4];
             List<Raider> tokenGroup = new List<Raider>();
             int i = -1;
+
+            List<Item>[] newLoot = new List<Item>[4];
+            for (int j = 0; j < newLoot.Length; j++)
+            {
+                newLoot[j] = new List<Item>();
+            }
             int k = 0;
             bool findingItems = false;
             foreach (var row in values)
@@ -88,14 +104,15 @@ namespace TierDistribution
                 }
                 else if (row[1] != "")
                 {
-                    tokenGroup.Add(new Raider((string)row[1], Class.Warrior, Role.Damage, new Status[] { StringToStatus((string)row[2]), StringToStatus((string)row[3]), StringToStatus((string)row[4]), StringToStatus((string)row[5]), StringToStatus((string)row[6]) }, new float[] { float.Parse(((string)row[11]).TrimEnd('%'), NumberStyles.Float, CultureInfo.InvariantCulture), float.Parse(((string)row[12]).TrimEnd('%'), NumberStyles.Float, CultureInfo.InvariantCulture) }));
+                    tokenGroup.Add(new Raider((string)row[indexName], StringToClass((string)row[indexClass]), StringToRole((string)row[indexRole]), new Status[] { StringToStatus((string)row[indexGearHelm]), StringToStatus((string)row[indexGearHelm+1]), StringToStatus((string)row[indexGearHelm+2]), StringToStatus((string)row[indexGearHelm+3]), StringToStatus((string)row[indexGearHelm+4]) }, new float[] { float.Parse(((string)row[indexTier2p]).TrimEnd('%'), NumberStyles.Float, CultureInfo.InvariantCulture), float.Parse(((string)row[indexTier4p]).TrimEnd('%'), NumberStyles.Float, CultureInfo.InvariantCulture) }));
                 }
 
 
                 //READ LOOT
                 if (findingItems && row[k] != "")
                 {
-                    Calculator.loot.Add(new Item(StringToSlot((string)row[k]), StringToStatus((string)row[k + 2])));
+                    //Calculator.loot.Add(new Item(StringToSlot((string)row[k]), StringToStatus((string)row[k + 2])));
+                    newLoot[StringToToken((string)row[k+1])].Add(new Item(StringToSlot((string)row[k]), StringToStatus((string)row[k + 2])));
                 }
 
                 if (!findingItems)
@@ -120,9 +137,20 @@ namespace TierDistribution
                 //Console.WriteLine("\n");
             }
 
-            return raid;
+            return (raid,newLoot);
         }
 
+        private static int StringToToken(string str)
+        {
+            switch (str)
+            {
+                case "Dreadful": return 0;
+                case "Mystic": return 1;
+                case "Venerated": return 2;
+                case "Zenith": return 3;    
+            }
+            return 0;
+        }
         private static Slot StringToSlot(string str)
         {
             switch (str)
@@ -151,46 +179,79 @@ namespace TierDistribution
             return Status.Empty;
         }
 
+        private static Class StringToClass(string str)
+        {
+            switch (str)
+            {
+                case "Warrior": return Class.Warrior;
+                case "Paladin": return Class.Paladin;
+                case "Hunter": return Class.Hunter;
+                case "Rogue": return Class.Rogue;
+                case "Priest": return Class.Priest;
+                case "DeathKnight": return Class.DeathKnight;
+                case "Shaman": return Class.Shaman;
+                case "Mage": return Class.Mage;
+                case "Warlock": return Class.Warlock;
+                case "Monk": return Class.Monk;
+                case "Druid": return Class.Druid;
+                case "DemonHunter": return Class.DemonHunter;
+                case "Evoker": return Class.Evoker;
+            }
 
-            //    var data = ReadData("AIzaSyBw_lIFMnJppjdhbKtNABGZQbjXS_lsDJw", "Testsheet!B1:C2");
-            //    foreach (var row in data)
-            //    {
-            //        foreach (var cell in row)
-            //        {
-            //            Console.Write("{0}\t", cell);
-            //        }
-            //        Console.WriteLine();
-            //    }
-            //}
-
-            //public static IList<IList<Object>> ReadData(string spreadsheetId, string range)
-            //{
-            //    UserCredential credential;
-
-            //    using (var stream = new FileStream("client_secret_882081320166-teh8os6ppeli8drtrjseo448a4c9mf0v.apps.googleusercontent.com.json", FileMode.Open, FileAccess.Read))
-            //    {
-            //        string credPath = "token.json";
-
-            //        credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-            //            GoogleClientSecrets.Load(stream).Secrets,
-            //            Scopes,
-            //            "user",
-            //            CancellationToken.None,
-            //            new FileDataStore(credPath, true)).Result;
-            //    }
-
-            //    var service = new SheetsService(new BaseClientService.Initializer()
-            //    {
-            //        HttpClientInitializer = credential,
-            //        ApplicationName = ApplicationName,
-            //    });
-
-            //    SpreadsheetsResource.ValuesResource.GetRequest request =
-            //            service.Spreadsheets.Values.Get(spreadsheetId, range);
-
-            //    ValueRange response = request.Execute();
-
-            //    return response.Values;
-            //}
+            return Class.Warrior;
         }
+
+        private static Role StringToRole(string str)
+        {
+            switch (str)
+            {
+                case "Damage": return Role.Damage;
+                case "Tank": return Role.Tank;
+                case "Healer": return Role.Healer;
+            }
+
+            return Role.Damage;
+        }
+
+        //    var data = ReadData("AIzaSyBw_lIFMnJppjdhbKtNABGZQbjXS_lsDJw", "Testsheet!B1:C2");
+        //    foreach (var row in data)
+        //    {
+        //        foreach (var cell in row)
+        //        {
+        //            Console.Write("{0}\t", cell);
+        //        }
+        //        Console.WriteLine();
+        //    }
+        //}
+
+        //public static IList<IList<Object>> ReadData(string spreadsheetId, string range)
+        //{
+        //    UserCredential credential;
+
+        //    using (var stream = new FileStream("client_secret_882081320166-teh8os6ppeli8drtrjseo448a4c9mf0v.apps.googleusercontent.com.json", FileMode.Open, FileAccess.Read))
+        //    {
+        //        string credPath = "token.json";
+
+        //        credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+        //            GoogleClientSecrets.Load(stream).Secrets,
+        //            Scopes,
+        //            "user",
+        //            CancellationToken.None,
+        //            new FileDataStore(credPath, true)).Result;
+        //    }
+
+        //    var service = new SheetsService(new BaseClientService.Initializer()
+        //    {
+        //        HttpClientInitializer = credential,
+        //        ApplicationName = ApplicationName,
+        //    });
+
+        //    SpreadsheetsResource.ValuesResource.GetRequest request =
+        //            service.Spreadsheets.Values.Get(spreadsheetId, range);
+
+        //    ValueRange response = request.Execute();
+
+        //    return response.Values;
+        //}
+    }
 }

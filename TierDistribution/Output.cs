@@ -28,11 +28,11 @@ namespace TierDistribution
                 case Class.Hunter: return ConsoleColor.Green;
                 case Class.Rogue: return ConsoleColor.Yellow;
                 case Class.Priest: return ConsoleColor.White;
-                case Class.Shaman: return ConsoleColor.Blue;
-                case Class.Mage: return ConsoleColor.DarkBlue;
+                case Class.Shaman: return ConsoleColor.DarkBlue;
+                case Class.Mage: return ConsoleColor.Blue;
                 case Class.Warlock: return ConsoleColor.DarkMagenta;
                 case Class.Monk: return ConsoleColor.Cyan;
-                case Class.Druid: return ConsoleColor.DarkGreen;
+                case Class.Druid: return ConsoleColor.DarkYellow;
                 case Class.DemonHunter: return ConsoleColor.DarkMagenta;
                 case Class.DeathKnight: return ConsoleColor.DarkRed;
                 case Class.Evoker: return ConsoleColor.Cyan;
@@ -40,12 +40,32 @@ namespace TierDistribution
             return ConsoleColor.White;
         }
 
-        public static void ToConsole(List<Raider> raiders)
+        public static void ToConsole(List<Raider>[] raiders)
         {
-
-            Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine("Name".PadRight(10) + "Helm".PadRight(10) + "Shoulder".PadRight(10) + "Chest".PadRight(10) + "Gloves".PadRight(10) + "Legs");
+            for (int i = 0; i < raiders.Length; i++)
+            {
+                RaidersToConsole(raiders[i]);
+                Console.WriteLine();
+            }
+            Console.WriteLine();
+        }
+
+        public static void ToConsole(List<Raider> raiders)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Name".PadRight(10) + "Helm".PadRight(10) + "Shoulder".PadRight(10) + "Chest".PadRight(10) + "Gloves".PadRight(10) + "Legs");
+            RaidersToConsole(raiders);
+
+            Console.WriteLine();
+
+        }
+
+        public static void RaidersToConsole(List<Raider> raiders)
+        {
+
+
             foreach (Raider raider in raiders)
             {
                 Console.ForegroundColor = GetConsoleColor(raider.clas);
@@ -74,7 +94,6 @@ namespace TierDistribution
                 Console.WriteLine();
             }
 
-            Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.White;
         }
 

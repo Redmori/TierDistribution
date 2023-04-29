@@ -10,13 +10,25 @@ namespace TierDistribution
 {
     public static class Calculator
     {
-        public static List<Raider> raiders = new List<Raider>();
-        public static List<Item> loot = new List<Item>();
+        //public static List<Raider> raiders = new List<Raider>();
+        //public static List<Item> loot = new List<Item>();
 
         public static float highest = 0f;
         public static List<Raider> bestDistr;
 
-        public static void GiveItems(int index, List<Raider> distr)
+        public static List<Raider>[] GiveItems(List<Raider>[] raiders, List<Item>[] newLoot)
+        {
+            List<Raider>[] maxDistr = new List<Raider>[raiders.Length];
+            for (int i = 0; i < raiders.Length; i++)
+            {
+                bestDistr = new List<Raider>();
+                highest = 0f;
+                GiveItems(raiders, newLoot, i);
+                maxDistr[i] = bestDistr;
+            }
+            return maxDistr;
+        }
+        public static void GiveItems(List<Raider> raiders, List<Item> newLoot,int index, List<Raider> distr)
         {
             foreach(Raider raider in raiders)
             {
@@ -28,18 +40,18 @@ namespace TierDistribution
                 //raider.GiveItem(loot[index]);
                 //distr.Add(raider);
 
-                if (index < loot.Count)
+                if (index < newLoot.Count)
                 {
-                    if (!IsUpgrade(raider, loot[index], distr)) continue;
+                    if (!IsUpgrade(raider, newLoot, newLoot[index], distr)) continue;
                     List<Raider> newList = new List<Raider>(distr);
                     newList.Add(raider);
                     //foreach(Raider rd in distr)
                     //    newList.Add(rd);
-                    GiveItems(index + 1, newList);
+                    GiveItems(raiders, newLoot, index + 1, newList);
                 }
                 else
                 {
-                    float calculated = Calculate(distr);
+                    float calculated = Calculate(raiders, newLoot, distr);
                     if(calculated > highest)
                     {
                         bestDistr = new List<Raider>(distr);
@@ -49,16 +61,16 @@ namespace TierDistribution
                 }
             }            
         }        
-        public static void GiveItems()
+        public static void GiveItems(List<Raider>[] raiders, List<Item>[] newLoot, int i)
         {
             List<Raider> distributionList = new List<Raider>();
-            GiveItems(0, distributionList);
+            GiveItems(raiders[i], newLoot[i], 0, distributionList);
         }
 
-        public static float Calculate(List<Raider> distr)
+        public static float Calculate(List<Raider> raiders, List<Item> newLoot, List<Raider> distr)
         {
             //Console.WriteLine("test: " + distr.Count);  
-            DistributeLoot(distr);
+            DistributeLoot(newLoot, distr);
 
 
             float sum = 0f;
@@ -70,13 +82,19 @@ namespace TierDistribution
             return sum;
         }
 
-        public static void DistributeLoot(List<Raider> distr)
+        public static void DistributeLoot(List<Item> newLoot, List<Raider> distr)
         {
             for (int i = 0; i < distr.Count; i++)
-                distr[i].GiveItem(loot[i]);
+                distr[i].GiveItem(newLoot[i]);
         }
 
-        public static bool IsUpgrade(Raider raider, Item item, List<Raider> distr)
+        public static void DistributeLoot(List<Item>[] newLoot, List<Raider>[] distr)
+        {
+            for (int i = 0; i < distr.Length; i++)
+                DistributeLoot(newLoot[i], distr[i]);
+        }
+
+        public static bool IsUpgrade(Raider raider, List<Item> newLoot, Item item, List<Raider> distr)
         {
             if ((int)item.status <= (int)raider.gear[(int)item.slot])
                 return false;
@@ -84,21 +102,31 @@ namespace TierDistribution
             int index = distr.IndexOf(raider, 0);
             while (index != -1)
             {
-                if (loot[index].slot == item.slot && (int)loot[index].status >= (int)item.status)
+                if (newLoot[index].slot == item.slot && (int)newLoot[index].status >= (int)item.status)
                     return false;
                 index = distr.IndexOf(raider, index + 1); // search for next occurrence starting from previous index                            
             }
             return true;
         }
 
-        public static string DistributionToString(List<Raider> distr)
+        public static string DistributionToString(List<Item>[] newLoot, List<Raider>[] distr)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < distr.Length; i++)
+            {
+                sb.AppendLine(DistributionToString(newLoot[i], distr[i]));
+            }
+            return sb.ToString();
+
+        }
+        public static string DistributionToString(List<Item> newLoot, List<Raider> distr)
         {
             //return String.Join(", ", distr.Select(raider => raider.name));
 
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < distr.Count; i++)
             {
-                sb.AppendFormat("{0} => {1}\n", loot[i].slot, distr[i].name);
+                sb.AppendFormat("{0} => {1}\n", newLoot[i].slot, distr[i].name);
             }
             return sb.ToString();
         }
