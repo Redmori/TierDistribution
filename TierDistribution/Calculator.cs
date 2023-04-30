@@ -16,6 +16,8 @@ namespace TierDistribution
         public static float highest = 0f;
         public static List<Raider> bestDistr;
 
+        public static int numberOfOmni = 2;
+
         public static List<Raider>[] GiveItems(List<Raider>[] raiders, List<Item>[] newLoot)
         {
             List<Raider>[] maxDistr = new List<Raider>[raiders.Length];
@@ -72,13 +74,42 @@ namespace TierDistribution
             //Console.WriteLine("test: " + distr.Count);  
             DistributeLoot(newLoot, distr);
 
-
             float sum = 0f;
             foreach(Raider raider in raiders)
             {
                 sum += raider.CalculatePower();
                 raider.loot.Clear();
             }
+
+            //TODO: implement omni token check here for this token group and return it
+
+            List<float> sums  = new List<float>();
+            sums.Add(sum);
+
+            int nOmni = 1;
+            while (nOmni <= numberOfOmni)
+            {
+                sums.Add(0f);
+                foreach (Raider raider in raiders)
+                {
+                    if(raider.numberOfTierWithLoot == 2 - nOmni)
+                    {
+                        if (raider.tierValue[0] > sums[nOmni])
+                        {
+                            sums[nOmni] = raider.tierValue[0];
+                        }
+                    }
+                    if (raider.numberOfTierWithLoot == 4 - nOmni)
+                    {
+                        if (raider.tierValue[1] > sums[nOmni])
+                        {
+                            sums[nOmni] = raider.tierValue[1];
+                        }
+                    }
+                }
+                nOmni++;
+            }
+            //TODO return sums;
             return sum;
         }
 

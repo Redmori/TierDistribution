@@ -46,6 +46,7 @@ namespace TierDistribution
         public Role role;
         public Status[] gear;
         public int numberOfTier;
+        public int numberOfTierWithLoot;
 
         public float[] tierValue;
 
@@ -97,12 +98,12 @@ namespace TierDistribution
             //Console.WriteLine(name + " : " + loot.Count + " : " + numberOfTier + " + " + n);
 
             float result = 0.0f;
-            int sum = numberOfTier + n;
+            numberOfTierWithLoot = numberOfTier + n;
 
-            if (numberOfTier < 2 && sum >= 2)
+            if (numberOfTier < 2 && numberOfTierWithLoot >= 2)
                 result += tierValue[0];
 
-            if (numberOfTier < 4 && sum >= 4)
+            if (numberOfTier < 4 && numberOfTierWithLoot >= 4)
                 result += tierValue[1];
 
 

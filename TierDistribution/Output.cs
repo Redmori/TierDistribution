@@ -1,8 +1,12 @@
-﻿using System;
+﻿using Google.Apis.Services;
+using Google.Apis.Sheets.v4.Data;
+using Google.Apis.Sheets.v4;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Google.Apis.Auth.OAuth2;
 
 namespace TierDistribution
 {
@@ -95,6 +99,43 @@ namespace TierDistribution
             }
 
             Console.ForegroundColor = ConsoleColor.White;
+        }
+        
+        public static void WriteToSheet() //DOESNT WORK
+        {
+            var sheetsService = new SheetsService(new BaseClientService.Initializer
+            {
+                ApiKey = "AIzaSyAIpz0Rm9ywnetyh76B49uEesbo1jYQk6Y"
+            });
+
+            var spreadsheetId = "14fm2C7bpPJ7EzGTBdYFXHqL7KpSHGCpf8ktuNgLpn9o";
+            var sheetName = "test";
+            var range = "test!G1:H2";
+
+            // create the values object to hold the new data
+            var values = new List<IList<object>>
+            {
+                new List<object> {"Value 1", "Value 2"},
+                new List<object> {"Value 3", "Value 4"}
+            };
+
+            // create the request to update the data
+            var updateRequest = new ValueRange { Values = values };
+            var update = sheetsService.Spreadsheets.Values.Update(updateRequest, spreadsheetId, range);
+            update.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
+            var result = update.Execute();
+        }
+
+        public static void WriteToSheet2() //DOESNT WORK
+        {
+            var credential = GoogleCredential.FromFile("client_secret_882081320166-teh8os6ppeli8drtrjseo448a4c9mf0v.apps.googleusercontent.com.json").CreateScoped(new[] { SheetsService.Scope.Spreadsheets });
+
+            // Create the Sheets API service using the credentials.
+            var sheetsService = new SheetsService(new BaseClientService.Initializer
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = "Desktop app"
+            });
         }
 
         //public static void ToConsole(List<Raider> raiders)
