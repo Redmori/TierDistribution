@@ -12,117 +12,89 @@ namespace TierDistribution
     {
         //public static List<Raider> raiders = new List<Raider>();
         //public static List<Item> loot = new List<Item>();
+        public static int nTokens = 4;
 
         public static float highest = 0f;
         public static List<Raider> bestDistr;
 
         public static int numberOfOmni = 2;
 
-        public static List<Raider>[] GiveItems(List<Raider>[] raiders, List<Item>[] newLoot)
+        public static List<Distribution>[] GiveItems(List<Raider>[] raiders, List<Item>[] newLoot)
         {
-            List<Raider>[] maxDistr = new List<Raider>[raiders.Length];
-            for (int i = 0; i < raiders.Length; i++)
+            Console.Write("Generating loot distributions");
+            List<Distribution>[] distributions = new List<Distribution>[nTokens];
+            for (int i = 0; i < nTokens; i++)
             {
-                bestDistr = new List<Raider>();
-                highest = 0f;
-                GiveItems(raiders, newLoot, i);
-                maxDistr[i] = bestDistr;
+                distributions[i] = GiveItems(raiders, newLoot, i);
+                Console.Write(" " + i);
+                //bestDistr = new List<Raider>();
+                //highest = 0f;
+                //GiveItems(raiders, newLoot, i);
+                //maxDistr[i] = bestDistr;
             }
-            return maxDistr;
+            Console.WriteLine();
+            return distributions;
         }
-        public static void GiveItems(List<Raider> raiders, List<Item> newLoot,int index, List<Raider> distr)
+        public static List<Distribution> GiveItems(List<Distribution> distrList, List<Raider> raiders, List<Item> newLoot,int index, Distribution distr)
         {
             foreach(Raider raider in raiders)
             {
                 if(index == 0)
-                    Console.Write(Math.Round((float)raiders.IndexOf(raider)/(float)raiders.Count*100) + "%");
-                if (index == 1)
+                    //Console.Write(Math.Round((float)raiders.IndexOf(raider)/(float)raiders.Count*100) + "%");
                     Console.Write(".");
-                //Console.WriteLine(raider.name + " - index: " + index);
-                //raider.GiveItem(loot[index]);
-                //distr.Add(raider);
+                //if (index == 1)
+                //    Console.Write(".");
 
                 if (index < newLoot.Count)
                 {
-                    if (!IsUpgrade(raider, newLoot, newLoot[index], distr)) continue;
-                    List<Raider> newList = new List<Raider>(distr);
-                    newList.Add(raider);
-                    //foreach(Raider rd in distr)
-                    //    newList.Add(rd);
-                    GiveItems(raiders, newLoot, index + 1, newList);
+                    if (!IsUpgrade(raider, newLoot, newLoot[index], distr.distr)) continue;
+                    Distribution newDistr = new Distribution(distr);
+                    newDistr.AddRaider(raider);
+                    GiveItems(distrList, raiders, newLoot, index + 1, newDistr);
                 }
                 else
                 {
-                    float calculated = Calculate(raiders, newLoot, distr);
-                    if(calculated > highest)
-                    {
-                        bestDistr = new List<Raider>(distr);
-                        highest = calculated;
-                    }
-                    //Console.WriteLine("Setup with power: " + calculated);
+                    distrList.Add(distr);
                 }
-            }            
+            }
+            return distrList;
         }        
-        public static void GiveItems(List<Raider>[] raiders, List<Item>[] newLoot, int i)
+        public static List<Distribution> GiveItems(List<Raider>[] raiders, List<Item>[] newLoot, int i)
         {
-            List<Raider> distributionList = new List<Raider>();
-            GiveItems(raiders[i], newLoot[i], 0, distributionList);
+            List<Distribution> distrList = new List<Distribution>();
+            Distribution newDistr = new Distribution();
+            return GiveItems(distrList, raiders[i], newLoot[i], 0, newDistr);
         }
 
-        public static float Calculate(List<Raider> raiders, List<Item> newLoot, List<Raider> distr)
+        public static void CalculateDistributions(List<Raider>[] raid, List<Item>[] newLoot, List<Distribution>[] distributions)
         {
-            //Console.WriteLine("test: " + distr.Count);  
-            DistributeLoot(newLoot, distr);
-
-            float sum = 0f;
-            foreach(Raider raider in raiders)
+            Console.Write("Calculating distributions values");
+            for (int i = 0; i < nTokens; i++)
             {
-                sum += raider.CalculatePower();
-                raider.loot.Clear();
+                Console.Write(" - " + distributions[i].Count());
+                CalculateDistributions(raid[i], newLoot[i], distributions[i]);
             }
-
-            //TODO: implement omni token check here for this token group and return it
-
-            List<float> sums  = new List<float>();
-            sums.Add(sum);
-
-            int nOmni = 1;
-            while (nOmni <= numberOfOmni)
-            {
-                sums.Add(0f);
-                foreach (Raider raider in raiders)
-                {
-                    if(raider.numberOfTierWithLoot == 2 - nOmni)
-                    {
-                        if (raider.tierValue[0] > sums[nOmni])
-                        {
-                            sums[nOmni] = raider.tierValue[0];
-                        }
-                    }
-                    if (raider.numberOfTierWithLoot == 4 - nOmni)
-                    {
-                        if (raider.tierValue[1] > sums[nOmni])
-                        {
-                            sums[nOmni] = raider.tierValue[1];
-                        }
-                    }
-                }
-                nOmni++;
-            }
-            //TODO return sums;
-            return sum;
+            Console.WriteLine();
         }
 
-        public static void DistributeLoot(List<Item> newLoot, List<Raider> distr)
+        public static void CalculateDistributions(List<Raider> raiders, List<Item> newLoot, List<Distribution> distributions)
         {
-            for (int i = 0; i < distr.Count; i++)
-                distr[i].GiveItem(newLoot[i]);
+            foreach(Distribution distr in distributions)
+                distr.Calculate(raiders, newLoot);
         }
 
-        public static void DistributeLoot(List<Item>[] newLoot, List<Raider>[] distr)
+        public static Distribution[] PickBest(List<Distribution>[] distributions)
         {
-            for (int i = 0; i < distr.Length; i++)
-                DistributeLoot(newLoot[i], distr[i]);
+            return distributions
+                .Select(list => list.OrderByDescending(d => d.baseValue).First())
+                .ToArray();
+        }
+
+
+        public static void DistributeLoot(List<Item>[] newLoot, Distribution[] distr)
+        {
+            for (int i = 0; i < nTokens; i++)
+                distr[i].DistributeLoot(newLoot[i]);
         }
 
         public static bool IsUpgrade(Raider raider, List<Item> newLoot, Item item, List<Raider> distr)
@@ -140,7 +112,7 @@ namespace TierDistribution
             return true;
         }
 
-        public static string DistributionToString(List<Item>[] newLoot, List<Raider>[] distr)
+        public static string DistributionToString(List<Item>[] newLoot, Distribution[] distr)
         {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < distr.Length; i++)
@@ -150,14 +122,14 @@ namespace TierDistribution
             return sb.ToString();
 
         }
-        public static string DistributionToString(List<Item> newLoot, List<Raider> distr)
+        public static string DistributionToString(List<Item> newLoot, Distribution distr) //MOVE TO DISTRIBUTION CLASS?
         {
             //return String.Join(", ", distr.Select(raider => raider.name));
 
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < distr.Count; i++)
+            for (int i = 0; i < distr.distr.Count; i++)
             {
-                sb.AppendFormat("{0} => {1}\n", newLoot[i].slot, distr[i].name);
+                sb.AppendFormat("{0} => {1}\n", newLoot[i].slot, distr.distr[i].name);
             }
             return sb.ToString();
         }

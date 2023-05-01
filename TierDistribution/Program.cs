@@ -7,8 +7,14 @@ using TierDistribution;
 //PRINT THE CURRENT RAID TO CONSOLE
 Output.ToConsole(raid);
 
-//GIVE THE LOOT RECURSIVELY TO THE RAID AND FIND THE MAXIMUM DISTRIBUTION
-List<Raider>[] maxDistr = Calculator.GiveItems(raid, loot);
+//GENERATE LOOT DISTRIBUTIONS
+List<Distribution>[] distributions = Calculator.GiveItems(raid, loot);
+
+//CALCULATE THE DISTRIBUTIONS
+Calculator.CalculateDistributions(raid,loot,distributions);
+
+//PICK THE BEST DISTRIBUTION(S)
+Distribution[] maxDistr = Calculator.PickBest(distributions);
 
 //GIVE THE BEST DISTRIBUTION TO THE RAID
 Calculator.DistributeLoot(loot, maxDistr);
