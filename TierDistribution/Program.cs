@@ -7,19 +7,28 @@ using TierDistribution;
 //PRINT THE CURRENT RAID TO CONSOLE
 Output.ToConsole(raid);
 
-//GENERATE LOOT DISTRIBUTIONS
-List<Distribution>[] distributions = Calculator.GiveItems(raid, loot);
+int[] nToken = new int[] { 4, 5, 6, 7, 22 };
+int[] nLoot = new int[] { 5, 6, 7, 8, 3 };
 
-//CALCULATE THE DISTRIBUTIONS
-Calculator.CalculateDistributions(raid,loot,distributions);
+Chromosome ch = new Chromosome(nToken, nLoot);
+Console.WriteLine(ch.ToString());
 
-//PICK THE BEST DISTRIBUTION(S)
-Distribution[] maxDistr = Calculator.PickBest(distributions);
 
-//GIVE THE BEST DISTRIBUTION TO THE RAID
-Calculator.DistributeLoot(loot, maxDistr);
-//PRINT THE RAID TO CONSOLE WITH THEIR NEW ITEMS
-Output.ToConsole(raid);
 
-//PRINT THE ITEM TRADING TO CONSOLE
-Console.WriteLine(Calculator.DistributionToString(loot, maxDistr));
+
+////GENERATE LOOT DISTRIBUTIONS
+//List<Distribution>[] distributions = Calculator.GiveItems(raid, loot);
+
+////CALCULATE THE DISTRIBUTIONS
+//Calculator.CalculateDistributions(raid,loot,distributions);
+
+////PICK THE BEST DISTRIBUTION(S)
+//Distribution[] maxDistr = Calculator.PickBest(distributions);
+
+////GIVE THE BEST DISTRIBUTION TO THE RAID
+//Calculator.DistributeLoot(loot, maxDistr);
+////PRINT THE RAID TO CONSOLE WITH THEIR NEW ITEMS
+//Output.ToConsole(raid);
+
+////PRINT THE ITEM TRADING TO CONSOLE
+//Console.WriteLine(Calculator.DistributionToString(loot, maxDistr));
