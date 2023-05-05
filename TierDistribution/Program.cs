@@ -3,15 +3,65 @@ using TierDistribution;
 
 //READ SHEET TO OBTAIN THE RAID AND LOOT
 (List<Raider>[] raid, List<Item>[] loot) = Input.ReadSheet();
-
+int nOmni = 3;
 //PRINT THE CURRENT RAID TO CONSOLE
 Output.ToConsole(raid);
 
-int[] nToken = new int[] { 4, 5, 6, 7, 22 };
-int[] nLoot = new int[] { 5, 6, 7, 8, 3 };
+int[] nToken = new int[] { raid[0].Count, raid[1].Count, raid[2].Count, raid[3].Count, raid[0].Count + raid[1].Count + raid[2].Count + raid[3].Count };
+int[] nLoot = new int[] { loot[0].Count, loot[1].Count, loot[2].Count, loot[3].Count, nOmni };
 
-Chromosome ch = new Chromosome(nToken, nLoot);
-Console.WriteLine(ch.ToString());
+//Chromosome ch = new Chromosome(nToken, nLoot);
+//Console.WriteLine(ch.ToString());
+//Console.WriteLine();
+//Chromosome ch2 = new Chromosome(nToken, nLoot);
+//Console.WriteLine(ch2.ToString());
+//Console.WriteLine();
+//Chromosome child = ch.Mutate(ch2, nToken, nLoot);
+//Console.WriteLine(child.ToString());
+
+int populationSize = 500;
+List<Chromosome> population = new List<Chromosome>();
+
+for(int i = 0; i < populationSize; i++)
+{
+    population.Add(new Chromosome(nToken, nLoot));
+}
+
+int nGenerations = 2000;
+int nElites = (int)Math.Round(populationSize * 0.1);
+int nMutations = (int)Math.Round(populationSize * 0.5);
+
+for (int i = 0; i < nGenerations; i++)
+{
+    foreach(Chromosome chromosome in population)
+        chromosome.CalcFitness();
+
+    if (population[0].fitness == 0)
+    {
+        Console.WriteLine("perfect fitness found after " + i + " generations.");
+        break;
+    }
+    Console.WriteLine(population[0].fitness);
+
+    population = population.OrderBy(c => c.fitness).ToList();
+
+    List<Chromosome> newPopulation = population.Take(nElites).ToList();
+
+    Random random = new Random();
+    while(newPopulation.Count < populationSize)
+    {
+        int r1 = random.Next(nMutations);
+        int r2 = random.Next(nMutations);
+
+        newPopulation.Add(population[r1].Mutate(population[r2], nToken, nLoot));
+    }
+
+    population = newPopulation;
+}
+
+//Console.WriteLine();
+//Console.WriteLine(population[0].ToString());
+//Console.WriteLine(population[1].ToString());
 
 
 

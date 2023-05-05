@@ -9,12 +9,22 @@ namespace TierDistribution
     public class Chromosome
     {
         public int[][] distr;
+        public int fitness;
+
+        public Chromosome(int[] nLoot)
+        {
+            distr = new int[5][];
+            for (int i = 0; i < 5; i++)
+            {
+                distr[i] = new int[nLoot[i]];
+            }
+        }
 
         public Chromosome(int[] nToken, int[] nLoot)
         {
             distr = new int[5][];
             Random random = new Random();
-            for(int i = 0; i < 4; i++)
+            for(int i = 0; i < 5; i++)
             {
                 distr[i] = new int[nLoot[i]];
                 for (int j=0; j < nLoot[i]; j++)
@@ -22,12 +32,43 @@ namespace TierDistribution
                     distr[i][j] = random.Next(nToken[i]);
                 }
             }
+        }
 
-            distr[4] = new int[nLoot[4]];
-            for (int j = 0; j < nLoot[4]; j++)
+        public Chromosome Mutate(Chromosome ch2, int[] nToken, int[] nLoot)
+        {
+            Chromosome child = new Chromosome(nLoot);
+
+            Random random = new Random();
+            for (int i = 0; i < 5; i++)
             {
-                distr[4][j] = random.Next(nToken[4]);
+                for (int j = 0; j < nLoot[i]; j++)
+                {
+                    int r = random.Next(100);
+                    if (r <= 45)
+                        child.distr[i][j] = this.distr[i][j];
+                    else if (r <= 90)
+                        child.distr[i][j] = ch2.distr[i][j];
+                    else //>90
+                        child.distr[i][j] = new Random(r).Next(nToken[i]);
+                }
             }
+
+
+            return child;
+        }
+
+        public void CalcFitness()
+        {
+            int sum = 0;
+            for (int i = 0; i < 5; i++)
+            {
+                for (int j = 0; j < distr[i].Length; j++)
+                {
+                    sum += distr[i][j];
+                }
+            }
+
+            fitness = sum;
         }
 
         public override string ToString()
