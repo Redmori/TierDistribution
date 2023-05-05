@@ -28,22 +28,27 @@ for(int i = 0; i < populationSize; i++)
 }
 
 int nGenerations = 2000;
-int nElites = (int)Math.Round(populationSize * 0.1);
+int nLoading = (int)((float)nGenerations * 0.1);
+int nElites = (int)Math.Round(populationSize * 0.01);
 int nMutations = (int)Math.Round(populationSize * 0.5);
 
 for (int i = 0; i < nGenerations; i++)
 {
-    foreach(Chromosome chromosome in population)
-        chromosome.CalcFitness();
+    if (i % nLoading == 0)
+        Console.Write(".");
 
-    if (population[0].fitness == 0)
+    foreach(Chromosome chromosome in population)
+        chromosome.CalcNewFitness(raid,loot);
+    
+    population = population.OrderByDescending(c => c.fitness).ToList();
+
+    if (population[0].fitness > 200)
     {
         Console.WriteLine("perfect fitness found after " + i + " generations.");
         break;
     }
-    Console.WriteLine(population[0].fitness);
 
-    population = population.OrderBy(c => c.fitness).ToList();
+    //Console.WriteLine(population[0].fitness);
 
     List<Chromosome> newPopulation = population.Take(nElites).ToList();
 
@@ -58,6 +63,10 @@ for (int i = 0; i < nGenerations; i++)
 
     population = newPopulation;
 }
+Console.WriteLine("Solution found with fitness: " + population[0].fitness);
+population[0].AssignLoot(raid,loot);
+//Console.WriteLine(population[0].ToString());
+Output.ToConsole(raid);
 
 //Console.WriteLine();
 //Console.WriteLine(population[0].ToString());

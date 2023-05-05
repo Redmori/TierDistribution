@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
+using System.Reflection.Metadata.Ecma335;
 
 namespace TierDistribution
 {
@@ -77,18 +78,17 @@ namespace TierDistribution
 
                 for (int i = 0; i < 5; i++)
                 {
-                    Item item = raider.loot.FirstOrDefault(item => (int)item.slot == i);
-                    if (item != null)
+                    if (raider.newGear[i] != raider.gear[i])
                     {
                         Console.ForegroundColor = ConsoleColor.Black;
-                        Console.BackgroundColor = GetConsoleColor(item.status);
-                        Console.Write(item.status.ToString().PadRight(10));
+                        Console.BackgroundColor = GetConsoleColor(raider.newGear[i]);
+                        Console.Write(raider.newGear[i].ToString().PadRight(10));
                         Console.BackgroundColor = ConsoleColor.Black;
                     }
                     else
                     {
-                        Console.ForegroundColor = GetConsoleColor(raider.gear[i]);
-                        Console.Write(raider.gear[i] == Status.Empty ? "-".PadRight(10) : raider.gear[i].ToString().PadRight(10));
+                        Console.ForegroundColor = GetConsoleColor(raider.newGear[i]);
+                        Console.Write(raider.newGear[i] == Status.Empty ? "-".PadRight(10) : raider.newGear[i].ToString().PadRight(10));
                     }
                 }
 

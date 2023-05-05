@@ -9,7 +9,7 @@ namespace TierDistribution
     public class Chromosome
     {
         public int[][] distr;
-        public int fitness;
+        public float fitness;
 
         public Chromosome(int[] nLoot)
         {
@@ -49,7 +49,7 @@ namespace TierDistribution
                     else if (r <= 90)
                         child.distr[i][j] = ch2.distr[i][j];
                     else //>90
-                        child.distr[i][j] = new Random(r).Next(nToken[i]);
+                        child.distr[i][j] = random.Next(nToken[i]);
                 }
             }
 
@@ -57,19 +57,64 @@ namespace TierDistribution
             return child;
         }
 
-        public void CalcFitness()
+        public void CalcNewFitness(List<Raider>[] raid, List<Item>[] loot)
         {
-            int sum = 0;
-            for (int i = 0; i < 5; i++)
+            AssignLoot(raid, loot);
+
+            CalcFitness(raid);
+        }
+
+        public void AssignLoot(List<Raider>[] raid, List<Item>[] loot)
+        {
+            for (int i = 0; i < 4; i++)
             {
-                for (int j = 0; j < distr[i].Length; j++)
+                foreach (Raider raider in raid[i])
                 {
-                    sum += distr[i][j];
+                    raider.ResetGear();
+                }
+            }
+
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < loot[i].Count; j++)
+                {
+                    int index = distr[i][j];
+                    raid[i][index].AssignItem(loot[i][j]);
+                }
+            }
+
+            //TODO: assign omni token
+
+        }
+
+        public void CalcFitness(List<Raider>[] raid)
+        {
+            float sum = 0;
+            for (int i = 0; i < raid.Length; i++)
+            {
+                foreach(Raider raider in raid[i])
+                {
+                    sum +=  raider.CalcFitness(raider.newGear) - raider.baseFitness;
                 }
             }
 
             fitness = sum;
         }
+
+
+        //public void CalcFitness()
+        //{
+        //    int sum = 0;
+        //    for (int i = 0; i < 5; i++)
+        //    {
+        //        for (int j = 0; j < distr[i].Length; j++)
+        //        {
+        //            sum += distr[i][j];
+        //        }
+        //    }
+
+        //    fitness = sum;
+        //}
 
         public override string ToString()
         {

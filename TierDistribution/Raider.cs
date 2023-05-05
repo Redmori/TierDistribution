@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace TierDistribution
-{    public enum Status
+{    
+    public enum Status
     {
         Empty,
         LFR,
@@ -44,7 +45,11 @@ namespace TierDistribution
         public string name;
         public Class clas;
         public Role role;
+
         public Status[] gear;
+        public float baseFitness;
+        public Status[] newGear;
+
         public int numberOfTier;
         public int numberOfTierWithLoot;
 
@@ -58,15 +63,52 @@ namespace TierDistribution
             clas = class_;
             role = role_;
             gear = gear_;
+            
+            newGear = new Status[gear.Length];
+            Array.Copy(gear, newGear, gear.Length);
             tierValue = tierValue_;
             tierValue[1] -= tierValue[0]; //clause that the column is 2p+4p
 
             numberOfTier = CalculateNumberOfTier();
+
+            baseFitness = CalcFitness(gear);
         }
 
         public void GiveItem(Item item)
         {
             loot.Add(item);
+        }
+
+        public void AssignItem(Item item)
+        {
+            //TODO check if its an upgrade?
+            newGear[(int)item.slot] = item.status;
+        }
+
+        public void ResetGear()
+        {
+            for (int i = 0; i < gear.Length; i++)
+            {
+                newGear[i] = gear[i];
+            }
+        }
+
+        public float CalcFitness(Status[] cGear)
+        {
+            float sum = 0;
+            int n = 0;
+            for(int i = 0; i < cGear.Length; ++i)
+            {
+                if (cGear[i] == Status.LFR || cGear[i] == Status.Normal || cGear[i] == Status.Heroic || cGear[i] == Status.Mythic)
+                    n++;
+            }
+
+            if (n >= 2)
+                sum += tierValue[0];
+            if (n >= 4)
+                sum += tierValue[1];
+
+            return sum;
         }
 
         public int CalculateNumberOfTier()
