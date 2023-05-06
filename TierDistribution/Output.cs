@@ -121,10 +121,15 @@ namespace TierDistribution
 
                 //Tier values
                 int nTier = raider.CalculateNumberOfTier() + raider.nOmni + (raider.usedOmni ? 1 : 0);
-                if (nTier >= 2)
+                if (nTier >= 2 && raider.numberOfTier < 2)
                 {
                     Console.BackgroundColor = ConsoleColor.Green;
                     Console.ForegroundColor = ConsoleColor.Black;
+                }
+                else if (nTier >= 2)
+                {
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.ForegroundColor = ConsoleColor.Green;
                 }
                 else
                 {
@@ -132,10 +137,15 @@ namespace TierDistribution
                     Console.ForegroundColor = ConsoleColor.White;
                 }
                 Console.Write((" " + (Math.Round(raider.tierValue[0],2).ToString())).PadRight(5));
-                if (nTier >= 4)
+                if (nTier >= 4 && raider.numberOfTier < 4)
                 {
                     Console.BackgroundColor = ConsoleColor.Green;
                     Console.ForegroundColor = ConsoleColor.Black;
+                }
+                else if (nTier >= 4)
+                {
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.ForegroundColor = ConsoleColor.Green;
                 }
                 else
                 {

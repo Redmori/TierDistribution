@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
@@ -109,26 +110,30 @@ namespace TierDistribution
         {
             float sum = 0;
             int n = CalculateNumberOfTier();
+            int assignedTier = n + nOmni;
 
-            if (n+nOmni >= 2)
+            if (assignedTier >= 2)
                 sum += tierValue[0];
-            if (n+nOmni >= 4)
+            if (assignedTier >= 4)
                 sum += tierValue[1];
 
-            //Handle the AotC omni token (for now we just use it when we can reach 2 or 4 set
+            //Handle the AotC omni token (for now we just use it when we can reach 2 or 4 set. Where we only use it to get 2p if 2p is 3x better than 4p
             if (hasOmni)
             {
-                if (n + nOmni == 1)
+                if (assignedTier == 1 && tierValue[0] > 3 * tierValue[1])
                 {
                     sum += tierValue[0];
                     usedOmni = true;
                 }
-                else if (n + nOmni == 3)
+                else if (assignedTier == 3)
                 {
                     sum += tierValue[1];
                     usedOmni = true;
                 }
             }
+            //bonus if you keep AotC omni token (for now we give half the value of upcoming tier sets)
+            if(hasOmni && !usedOmni)
+                sum += Math.Max(assignedTier < 2 ? tierValue[0] * 0.5f : 0f, assignedTier < 4 ? tierValue[1] * 0.5f : 0f);
 
             return sum;
         }
