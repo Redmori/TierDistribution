@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Google.Apis.Auth.OAuth2;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -57,15 +59,16 @@ namespace TierDistribution
             return child;
         }
 
-        public void CalcNewFitness(List<Raider>[] raid, List<Item>[] loot)
+        public void CalcNewFitness(List<Raider>[] raid, List<Item>[] loot, int nOmni)
         {
-            AssignLoot(raid, loot);
+            AssignLoot(raid, loot, nOmni);
 
             CalcFitness(raid);
         }
 
-        public void AssignLoot(List<Raider>[] raid, List<Item>[] loot)
+        public void AssignLoot(List<Raider>[] raid, List<Item>[] loot, int nOmni)
         {
+            //Reset gear
             for (int i = 0; i < 4; i++)
             {
                 foreach (Raider raider in raid[i])
@@ -74,6 +77,7 @@ namespace TierDistribution
                 }
             }
 
+            //Assign loot
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < loot[i].Count; j++)
@@ -83,7 +87,10 @@ namespace TierDistribution
                 }
             }
 
-            //TODO: assign omni token
+            //Assign omni token
+            var flat = raid.SelectMany(x => x);
+            for (int n = 0; n < nOmni; n++)
+                flat.ElementAt(distr[4][n]).AssignOmni();
 
         }
 
@@ -94,7 +101,7 @@ namespace TierDistribution
             {
                 foreach(Raider raider in raid[i])
                 {
-                    sum +=  raider.CalcFitness(raider.newGear) - raider.baseFitness;
+                    sum +=  raider.CalcFitness() - raider.baseFitness;
                 }
             }
 

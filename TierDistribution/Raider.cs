@@ -49,6 +49,9 @@ namespace TierDistribution
         public Status[] gear;
         public float baseFitness;
         public Status[] newGear;
+        public int nOmni; //Sak omni tokens
+        public bool hasOmni; //AotC omni
+        public bool usedOmni = false;
 
         public int numberOfTier;
         public int numberOfTierWithLoot;
@@ -63,15 +66,17 @@ namespace TierDistribution
             clas = class_;
             role = role_;
             gear = gear_;
+            hasOmni = true; //TODO: read this in data
             
             newGear = new Status[gear.Length];
             Array.Copy(gear, newGear, gear.Length);
+            nOmni = 0;
             tierValue = tierValue_;
             tierValue[1] -= tierValue[0]; //clause that the column is 2p+4p
 
             numberOfTier = CalculateNumberOfTier();
 
-            baseFitness = CalcFitness(gear);
+            baseFitness = CalcFitness();
         }
 
         public void GiveItem(Item item)
@@ -85,28 +90,45 @@ namespace TierDistribution
             newGear[(int)item.slot] = item.status;
         }
 
+        public void AssignOmni()
+        {
+            nOmni++;
+        }
+
         public void ResetGear()
         {
             for (int i = 0; i < gear.Length; i++)
             {
                 newGear[i] = gear[i];
             }
+            nOmni = 0;
+            usedOmni = false;
         }
 
-        public float CalcFitness(Status[] cGear)
+        public float CalcFitness()
         {
             float sum = 0;
-            int n = 0;
-            for(int i = 0; i < cGear.Length; ++i)
-            {
-                if (cGear[i] == Status.LFR || cGear[i] == Status.Normal || cGear[i] == Status.Heroic || cGear[i] == Status.Mythic)
-                    n++;
-            }
+            int n = CalculateNumberOfTier();
 
-            if (n >= 2)
+            if (n+nOmni >= 2)
                 sum += tierValue[0];
-            if (n >= 4)
+            if (n+nOmni >= 4)
                 sum += tierValue[1];
+
+            //Handle the AotC omni token (for now we just use it when we can reach 2 or 4 set
+            if (hasOmni)
+            {
+                if (n + nOmni == 1)
+                {
+                    sum += tierValue[0];
+                    usedOmni = true;
+                }
+                else if (n + nOmni == 3)
+                {
+                    sum += tierValue[1];
+                    usedOmni = true;
+                }
+            }
 
             return sum;
         }
@@ -116,7 +138,7 @@ namespace TierDistribution
             int n = 0;
             for(int  i = 0; i < 5; i++)
             {
-                if (gear[i] == Status.LFR || gear[i] == Status.Normal || gear[i] == Status.Heroic || gear[i] == Status.Mythic )
+                if (newGear[i] == Status.LFR || newGear[i] == Status.Normal || newGear[i] == Status.Heroic || newGear[i] == Status.Mythic )
                     n++;
             }
             return n;

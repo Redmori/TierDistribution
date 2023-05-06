@@ -76,6 +76,7 @@ namespace TierDistribution
                 Console.ForegroundColor = GetConsoleColor(raider.clas);
                 Console.Write(raider.name.PadRight(10));
 
+                //General gear
                 for (int i = 0; i < 5; i++)
                 {
                     if (raider.newGear[i] != raider.gear[i])
@@ -92,13 +93,63 @@ namespace TierDistribution
                     }
                 }
 
+                //Omni token
+                if(raider.nOmni > 0)
+                {
+                    Console.BackgroundColor = ConsoleColor.Yellow;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write(raider.nOmni.ToString().PadRight(2).PadLeft(3));
+                    Console.BackgroundColor = ConsoleColor.Black;
+                }
+                else
+                {
+                    Console.Write("".PadRight(2).PadLeft(3));
+                }
+
+                //AotC token
+                if (raider.usedOmni)
+                {
+                    Console.BackgroundColor = ConsoleColor.Yellow;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write("o".PadRight(2).PadLeft(3));
+                    Console.BackgroundColor = ConsoleColor.Black;
+                }
+                else
+                {
+                    Console.Write("".PadRight(2).PadLeft(3));
+                }
+
+                //Tier values
+                int nTier = raider.CalculateNumberOfTier() + raider.nOmni + (raider.usedOmni ? 1 : 0);
+                if (nTier >= 2)
+                {
+                    Console.BackgroundColor = ConsoleColor.Green;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                }
+                else
+                {
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+                Console.Write((" " + (Math.Round(raider.tierValue[0],2).ToString())).PadRight(5));
+                if (nTier >= 4)
+                {
+                    Console.BackgroundColor = ConsoleColor.Green;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                }
+                else
+                {
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+                Console.Write((" " + (Math.Round(raider.tierValue[1],2).ToString())).PadRight(5));
+
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.Write(raider.tierValue[0].ToString().PadRight(10));
-                Console.Write(raider.tierValue[1].ToString().PadRight(10));
-                Console.WriteLine();
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.WriteLine(" ");
             }
 
-            Console.ForegroundColor = ConsoleColor.White;
+
         }
         
         public static void WriteToSheet() //DOESNT WORK

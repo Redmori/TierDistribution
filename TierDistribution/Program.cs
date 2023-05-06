@@ -38,7 +38,7 @@ for (int i = 0; i < nGenerations; i++)
         Console.Write(".");
 
     foreach(Chromosome chromosome in population)
-        chromosome.CalcNewFitness(raid,loot);
+        chromosome.CalcNewFitness(raid,loot,nOmni);
     
     population = population.OrderByDescending(c => c.fitness).ToList();
 
@@ -64,7 +64,7 @@ for (int i = 0; i < nGenerations; i++)
     population = newPopulation;
 }
 Console.WriteLine("Solution found with fitness: " + population[0].fitness);
-population[0].AssignLoot(raid,loot);
+population[0].CalcNewFitness(raid,loot, nOmni);
 //Console.WriteLine(population[0].ToString());
 Output.ToConsole(raid);
 
