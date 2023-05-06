@@ -85,7 +85,7 @@ namespace TierDistribution
             List<Raider> tokenGroup = new List<Raider>();
             int i = -1;
 
-            List<Item>[] newLoot = new List<Item>[4];
+            List<Item>[] newLoot = new List<Item>[5];
             for (int j = 0; j < newLoot.Length; j++)
             {
                 newLoot[j] = new List<Item>();
@@ -147,7 +147,8 @@ namespace TierDistribution
                 case "Dreadful": return 0;
                 case "Mystic": return 1;
                 case "Venerated": return 2;
-                case "Zenith": return 3;    
+                case "Zenith": return 3;
+                case "Omni": return 4;
             }
             return 0;
         }
@@ -160,6 +161,7 @@ namespace TierDistribution
                 case "Chest": return Slot.Chest;
                 case "Gloves": return Slot.Gloves;
                 case "Legs": return Slot.Legs;
+                case "Omni": return Slot.Omni;
             }
             Console.WriteLine("Incorrect loot detected");
             return Slot.Helm;

@@ -59,14 +59,14 @@ namespace TierDistribution
             return child;
         }
 
-        public void CalcNewFitness(List<Raider>[] raid, List<Item>[] loot, int nOmni)
+        public void CalcNewFitness(List<Raider>[] raid, List<Item>[] loot)
         {
-            AssignLoot(raid, loot, nOmni);
+            AssignLoot(raid, loot);
 
             CalcFitness(raid);
         }
 
-        public void AssignLoot(List<Raider>[] raid, List<Item>[] loot, int nOmni)
+        public void AssignLoot(List<Raider>[] raid, List<Item>[] loot)
         {
             //Reset gear
             for (int i = 0; i < 4; i++)
@@ -89,7 +89,7 @@ namespace TierDistribution
 
             //Assign omni token
             var flat = raid.SelectMany(x => x);
-            for (int n = 0; n < nOmni; n++)
+            for (int n = 0; n < loot[4].Count; n++)
                 flat.ElementAt(distr[4][n]).AssignOmni();
 
         }

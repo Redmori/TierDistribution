@@ -3,7 +3,7 @@ using TierDistribution;
 
 //READ SHEET TO OBTAIN THE RAID AND LOOT
 (List<Raider>[] raid, List<Item>[] loot) = Input.ReadSheet();
-int nOmni = 3;
+int nOmni = loot[4].Count;
 //PRINT THE CURRENT RAID TO CONSOLE
 Output.ToConsole(raid);
 
@@ -38,7 +38,7 @@ for (int i = 0; i < nGenerations; i++)
         Console.Write(".");
 
     foreach(Chromosome chromosome in population)
-        chromosome.CalcNewFitness(raid,loot,nOmni);
+        chromosome.CalcNewFitness(raid,loot);
     
     population = population.OrderByDescending(c => c.fitness).ToList();
 
@@ -64,9 +64,11 @@ for (int i = 0; i < nGenerations; i++)
     population = newPopulation;
 }
 Console.WriteLine("Solution found with fitness: " + population[0].fitness);
-population[0].CalcNewFitness(raid,loot, nOmni);
-//Console.WriteLine(population[0].ToString());
+population[0].CalcNewFitness(raid,loot);
 Output.ToConsole(raid);
+
+
+
 
 //Console.WriteLine();
 //Console.WriteLine(population[0].ToString());

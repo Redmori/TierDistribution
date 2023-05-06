@@ -58,6 +58,7 @@ namespace TierDistribution
         public int numberOfTierWithLoot;
 
         public float[] tierValue;
+        public float gearMultiplier;
 
         public List<Item> loot = new List<Item>();
 
@@ -75,7 +76,16 @@ namespace TierDistribution
             tierValue = tierValue_;
             tierValue[1] -= tierValue[0]; //clause that the column is 2p+4p
 
-            numberOfTier = CalculateNumberOfTier();
+            if (role == Role.Healer)
+                gearMultiplier = 0.8f;
+            else if (role == Role.Tank)
+                gearMultiplier = 0.6f;
+            else
+                gearMultiplier = 1f;
+
+
+
+                numberOfTier = CalculateNumberOfTier();
 
             baseFitness = CalcFitness();
         }
@@ -135,7 +145,7 @@ namespace TierDistribution
             if(hasOmni && !usedOmni)
                 sum += Math.Max(assignedTier < 2 ? tierValue[0] * 0.5f : 0f, assignedTier < 4 ? tierValue[1] * 0.5f : 0f);
 
-            return sum;
+            return sum * gearMultiplier;
         }
 
         public int CalculateNumberOfTier()
@@ -198,7 +208,8 @@ namespace TierDistribution
        Shoulder,
        Chest,
        Gloves,
-       Legs
+       Legs,
+       Omni
     }
     public class Item
     {
