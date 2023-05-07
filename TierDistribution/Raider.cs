@@ -62,13 +62,13 @@ namespace TierDistribution
 
         public List<Item> loot = new List<Item>();
 
-        public Raider(string name_, Class class_, Role role_, Status[] gear_, float[] tierValue_)
+        public Raider(string name_, Class class_, Role role_, Status[] gear_, float[] tierValue_, bool aotcAvail)
         {
             name = name_;
             clas = class_;
             role = role_;
             gear = gear_;
-            hasOmni = true; //TODO: read this in data
+            hasOmni = aotcAvail;
             
             newGear = new Status[gear.Length];
             Array.Copy(gear, newGear, gear.Length);

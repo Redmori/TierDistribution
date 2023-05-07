@@ -76,6 +76,7 @@ namespace TierDistribution
             int indexGearHelm = 4;
             int indexTier2p = 13;
             int indexTier4p = indexTier2p + 1;
+            int indexOmni = 9;
 
 
 
@@ -104,7 +105,7 @@ namespace TierDistribution
                 }
                 else if (row[1] != "")
                 {
-                    tokenGroup.Add(new Raider((string)row[indexName], StringToClass((string)row[indexClass]), StringToRole((string)row[indexRole]), new Status[] { StringToStatus((string)row[indexGearHelm]), StringToStatus((string)row[indexGearHelm+1]), StringToStatus((string)row[indexGearHelm+2]), StringToStatus((string)row[indexGearHelm+3]), StringToStatus((string)row[indexGearHelm+4]) }, new float[] { float.Parse(((string)row[indexTier2p]).TrimEnd('%'), NumberStyles.Float, CultureInfo.InvariantCulture), float.Parse(((string)row[indexTier4p]).TrimEnd('%'), NumberStyles.Float, CultureInfo.InvariantCulture) }));
+                    tokenGroup.Add(new Raider((string)row[indexName], StringToClass((string)row[indexClass]), StringToRole((string)row[indexRole]), new Status[] { StringToStatus((string)row[indexGearHelm]), StringToStatus((string)row[indexGearHelm+1]), StringToStatus((string)row[indexGearHelm+2]), StringToStatus((string)row[indexGearHelm+3]), StringToStatus((string)row[indexGearHelm+4]) }, new float[] { float.Parse(((string)row[indexTier2p]).TrimEnd('%'), NumberStyles.Float, CultureInfo.InvariantCulture), float.Parse(((string)row[indexTier4p]).TrimEnd('%'), NumberStyles.Float, CultureInfo.InvariantCulture) }, (string)row[indexOmni] == "TRUE" ? true : false));
                 }
 
 

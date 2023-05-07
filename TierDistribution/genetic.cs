@@ -123,6 +123,22 @@ namespace TierDistribution
         //    fitness = sum;
         //}
 
+        public bool Equals(Chromosome other)
+        {
+            for (int i = 0; i < distr.Length; i++)
+            {
+                for (int j = 0; j < distr[i].Length; j++)
+                {
+                    if (this.distr[i][j] != other.distr[i][j])
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();

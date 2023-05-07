@@ -27,6 +27,9 @@ for(int i = 0; i < populationSize; i++)
     population.Add(new Chromosome(nToken, nLoot));
 }
 
+int uniqueSize = 10;
+List<Chromosome> uniqueBest = new List<Chromosome>();
+
 int nGenerations = 2000;
 int nLoading = (int)((float)nGenerations * 0.1);
 int nElites = (int)Math.Round(populationSize * 0.01);
@@ -34,24 +37,57 @@ int nMutations = (int)Math.Round(populationSize * 0.5);
 
 for (int i = 0; i < nGenerations; i++)
 {
+    //Show loading bar
     if (i % nLoading == 0)
         Console.Write(".");
 
+    //Calculate fitness
     foreach(Chromosome chromosome in population)
         chromosome.CalcNewFitness(raid,loot);
     
+    //Sort population by fitness (descending)
     population = population.OrderByDescending(c => c.fitness).ToList();
 
-    if (population[0].fitness > 200)
+    //Check if we found a unique good solution and add it to the unique list
+    for(int k = 0; k < uniqueSize; k++){
+        if (uniqueBest.Count >= uniqueSize)
+        {
+            bool toAdd = false;
+            for (int j = uniqueBest.Count - 1; j >= 0; j--)
+            {
+                if (uniqueBest[j].Equals(population[k]))
+                {
+                    toAdd = false;
+                    break;
+                }
+                if (uniqueBest[j].fitness > population[k].fitness)
+                    toAdd = true;
+            }
+            if(toAdd)
+                uniqueBest.Add(population[k]);
+        }
+        else
+        {
+            uniqueBest.Add(population[k]);
+        }
+    }
+    uniqueBest = uniqueBest.OrderByDescending(c => c.fitness).ToList();
+    if(uniqueBest.Count > uniqueSize)
+        uniqueBest.RemoveRange(uniqueSize, uniqueBest.Count-uniqueSize);
+
+
+
+    //If we have found a perfect solution, break the calculation and go to results (not used for now)
+    if (population[0].fitness > 2000)
     {
         Console.WriteLine("perfect fitness found after " + i + " generations.");
         break;
     }
 
-    //Console.WriteLine(population[0].fitness);
-
+    //Pick the elites and add them to the next population
     List<Chromosome> newPopulation = population.Take(nElites).ToList();
 
+    //Do random mutations
     Random random = new Random();
     while(newPopulation.Count < populationSize)
     {
@@ -61,11 +97,17 @@ for (int i = 0; i < nGenerations; i++)
         newPopulation.Add(population[r1].Mutate(population[r2], nToken, nLoot));
     }
 
+    //Next population becomes the current population
     population = newPopulation;
 }
-Console.WriteLine("Solution found with fitness: " + population[0].fitness);
-population[0].CalcNewFitness(raid,loot);
-Output.ToConsole(raid);
+
+//Display the best unique found solutions
+foreach (Chromosome chromosome in uniqueBest)
+{
+    Console.WriteLine("Solution found with fitness: " + chromosome.fitness);
+    chromosome.CalcNewFitness(raid, loot);
+    Output.ToConsole(raid);
+}
 
 
 
