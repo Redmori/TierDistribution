@@ -56,7 +56,7 @@ namespace TierDistribution
 
             var spreadsheetId = "14fm2C7bpPJ7EzGTBdYFXHqL7KpSHGCpf8ktuNgLpn9o";
             // it's possible to add range to this variable 
-            var sheetName = "Testsheet!A1:Z31";
+            var sheetName = "Testsheet!A1:AA31";
 
             // create the request to retrieve the data
             var request = sheetsService.Spreadsheets.Values.Get(spreadsheetId, sheetName);
@@ -77,7 +77,9 @@ namespace TierDistribution
             int indexTier2p = 13;
             int indexTier4p = indexTier2p + 1;
             int indexOmni = 9;
+            int indexVault = 10;
 
+            int indexValueHelm = 16;
 
 
             // iterate over the values and do something with them
@@ -105,7 +107,9 @@ namespace TierDistribution
                 }
                 else if (row[1] != "")
                 {
-                    tokenGroup.Add(new Raider((string)row[indexName], StringToClass((string)row[indexClass]), StringToRole((string)row[indexRole]), new Status[] { StringToStatus((string)row[indexGearHelm]), StringToStatus((string)row[indexGearHelm+1]), StringToStatus((string)row[indexGearHelm+2]), StringToStatus((string)row[indexGearHelm+3]), StringToStatus((string)row[indexGearHelm+4]) }, new float[] { float.Parse(((string)row[indexTier2p]).TrimEnd('%'), NumberStyles.Float, CultureInfo.InvariantCulture), float.Parse(((string)row[indexTier4p]).TrimEnd('%'), NumberStyles.Float, CultureInfo.InvariantCulture) }, (string)row[indexOmni] == "TRUE" ? true : false));
+                    float[] itemValues = new float[] { StringToValue((string)row[indexValueHelm]), StringToValue((string)row[indexValueHelm+1]) , StringToValue((string)row[indexValueHelm+2]) , StringToValue((string)row[indexValueHelm+3]) , StringToValue((string)row[indexValueHelm+4]) };
+
+                    tokenGroup.Add(new Raider((string)row[indexName], StringToClass((string)row[indexClass]), StringToRole((string)row[indexRole]), new Status[] { StringToStatus((string)row[indexGearHelm]), StringToStatus((string)row[indexGearHelm+1]), StringToStatus((string)row[indexGearHelm+2]), StringToStatus((string)row[indexGearHelm+3]), StringToStatus((string)row[indexGearHelm+4]) }, new float[] { float.Parse(((string)row[indexTier2p]).TrimEnd('%'), NumberStyles.Float, CultureInfo.InvariantCulture), float.Parse(((string)row[indexTier4p]).TrimEnd('%'), NumberStyles.Float, CultureInfo.InvariantCulture) }, (string)row[indexOmni] == "TRUE" ? true : false, float.TryParse(((string)row[indexVault]).TrimEnd('%'), NumberStyles.Float, CultureInfo.InvariantCulture, out float parsedValue) ? parsedValue : 0, itemValues));
                 }
 
 
@@ -153,6 +157,19 @@ namespace TierDistribution
             }
             return 0;
         }
+
+        private static float StringToValue(string str) //Item value modifiers
+        {
+            switch( str)
+            {
+                case "Giga": return 1f;
+                case "Good": return 0.7f;
+                case "mid": return 0.5f;
+                case "meh": return 0.3f;
+                case "blacklist": return 0f;
+            }
+            return 0f;
+        }
         private static Slot StringToSlot(string str)
         {
             switch (str)
@@ -175,7 +192,9 @@ namespace TierDistribution
                 case "-": return Status.Empty;
                 case "LFR": return Status.LFR;
                 case "Normal": return Status.Normal;
+                case "Avail in vault HC": return Status.HeroicVault;
                 case "Heroic": return Status.Heroic;
+                case "Avail in vault M": return Status.MythicVault;
                 case "Mythic": return Status.Mythic;
             }
 

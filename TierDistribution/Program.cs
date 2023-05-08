@@ -19,7 +19,7 @@ int[] nLoot = new int[] { loot[0].Count, loot[1].Count, loot[2].Count, loot[3].C
 //Chromosome child = ch.Mutate(ch2, nToken, nLoot);
 //Console.WriteLine(child.ToString());
 
-int populationSize = 500;
+int populationSize = 200;
 List<Chromosome> population = new List<Chromosome>();
 
 for(int i = 0; i < populationSize; i++)
@@ -27,10 +27,10 @@ for(int i = 0; i < populationSize; i++)
     population.Add(new Chromosome(nToken, nLoot));
 }
 
-int uniqueSize = 10;
+int uniqueSize = 1;
 List<Chromosome> uniqueBest = new List<Chromosome>();
 
-int nGenerations = 2000;
+int nGenerations = 5000;
 int nLoading = (int)((float)nGenerations * 0.1);
 int nElites = (int)Math.Round(populationSize * 0.01);
 int nMutations = (int)Math.Round(populationSize * 0.5);

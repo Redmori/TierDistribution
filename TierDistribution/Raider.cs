@@ -14,7 +14,9 @@ namespace TierDistribution
         Empty,
         LFR,
         Normal,
+        HeroicVault,
         Heroic,
+        MythicVault,
         Mythic,
     }
 
@@ -53,22 +55,32 @@ namespace TierDistribution
         public int nOmni; //Sak omni tokens
         public bool hasOmni; //AotC omni
         public bool usedOmni = false;
+        public bool hasVaultToken = false;
+        public bool usedVault = false;
 
         public int numberOfTier;
         public int numberOfTierWithLoot;
 
         public float[] tierValue;
+        public float[] itemValues;
+
+        public float vaultValue;
+
         public float gearMultiplier;
 
         public List<Item> loot = new List<Item>();
 
-        public Raider(string name_, Class class_, Role role_, Status[] gear_, float[] tierValue_, bool aotcAvail)
+        public Raider(string name_, Class class_, Role role_, Status[] gear_, float[] tierValue_, bool aotcAvail, float vaultValue_, float[] itemValues_)
         {
             name = name_;
             clas = class_;
             role = role_;
             gear = gear_;
             hasOmni = aotcAvail;
+            vaultValue = vaultValue_;
+            itemValues = itemValues_;
+
+            Console.WriteLine(itemValues[0]);
             
             newGear = new Status[gear.Length];
             Array.Copy(gear, newGear, gear.Length);
@@ -83,9 +95,15 @@ namespace TierDistribution
             else
                 gearMultiplier = 1f;
 
-
-
-                numberOfTier = CalculateNumberOfTier();
+            for(int i = 0; i < newGear.Length; i++)
+            {
+                if (newGear[i] == Status.HeroicVault || newGear[i] == Status.MythicVault)
+                {
+                    hasVaultToken = true;
+                }
+            }
+               
+            numberOfTier = CalculateNumberOfTier();
 
             baseFitness = CalcFitness();
         }
@@ -121,6 +139,7 @@ namespace TierDistribution
             float sum = 0;
             int n = CalculateNumberOfTier();
             int assignedTier = n + nOmni;
+            int finalTier = assignedTier;
 
             if (assignedTier >= 2)
                 sum += tierValue[0];
@@ -132,21 +151,75 @@ namespace TierDistribution
             {
                 if (assignedTier == 1 && tierValue[0] > 3 * tierValue[1])
                 {
+                    finalTier++;
                     sum += tierValue[0];
                     usedOmni = true;
                 }
                 else if (assignedTier == 3)
                 {
+                    finalTier++;
                     sum += tierValue[1];
                     usedOmni = true;
                 }
             }
+                ////}else if (hasVaultToken) //has an item in the vault, but no aotc token. We use vault token if its 2x better than the alternative
+                ////{
+                ////    if(assignedTier == 1 && tierValue[0] > 2 * vaultValue)
+                ////    {
+                ////        sum += tierValue[0];
+                ////        usedVault = true;
+                ////    }
+                ////    else if (assignedTier == 3 && tierValue[1] > 2 * vaultValue)
+                ////    {
+                ////        sum += tierValue[1];
+                ////        usedVault = true;
+                ////    }
+                ////}
+                ////else if(hasOmni && hasVaultToken) //has both item in vault and aotc token
+                ////{
+
+                ////}
+                ///
+
+            //    if (assignedTier == 1 || assignedTier == 3)
+            //{
+            //    float added = 0;
+                
+            //}
+
+            ////bonus if you used the alternative item in vault
+            //if (!usedVault) sum += vaultValue;
+
             //bonus if you keep AotC omni token (for now we give half the value of upcoming tier sets)
             if(hasOmni && !usedOmni)
                 sum += Math.Max(assignedTier < 2 ? tierValue[0] * 0.5f : 0f, assignedTier < 4 ? tierValue[1] * 0.5f : 0f);
 
+            //Add some bonus for each item based on multipliers, TODO: change % to absolute (1% -> 1k)
+            for(int i = 0; i < itemValues.Length; i++)
+            {
+                if (newGear[i] == Status.Heroic)
+                    sum += 1 * itemValues[i]; 
+                else if (newGear[i] == Status.Mythic)
+                    sum += 2 * itemValues[i];
+            }
+
+            float progMod = 0f; //Progression modifier towards tier set
+            if (finalTier == 1)
+                sum += progMod * tierValue[0];
+            if (finalTier == 3)
+                sum += progMod * tierValue[1];
+
             return sum * gearMultiplier;
         }
+
+        //public float NextTierValue(int aTier)
+        //{
+        //    if(aTier < 2)
+        //        return tierValue[0];
+        //    if(aTier < 4)
+        //        return tierValue[1];
+        //    return -100f;
+        //}
 
         public int CalculateNumberOfTier()
         {
