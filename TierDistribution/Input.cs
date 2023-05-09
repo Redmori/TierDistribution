@@ -87,6 +87,8 @@ namespace TierDistribution
             List<Raider>[] raid = new List<Raider>[4];
             List<Raider> tokenGroup = new List<Raider>();
             int i = -1;
+            List<Item> assignedLoot = new List<Item>();
+            List<string> assignedName = new List<string>();
 
             List<Item>[] newLoot = new List<Item>[5];
             for (int j = 0; j < newLoot.Length; j++)
@@ -117,7 +119,13 @@ namespace TierDistribution
                 if (findingItems && row[k] != "")
                 {
                     //Calculator.loot.Add(new Item(StringToSlot((string)row[k]), StringToStatus((string)row[k + 2])));
-                    newLoot[StringToToken((string)row[k+1])].Add(new Item(StringToSlot((string)row[k]), StringToStatus((string)row[k + 2])));
+                    if ((string)row[k + 3] == "-") //Read unassigned loot
+                        newLoot[StringToToken((string)row[k + 1])].Add(new Item(StringToSlot((string)row[k]), StringToStatus((string)row[k + 2])));
+                    else 
+                    {   //Read assigned loot
+                        assignedLoot.Add(new Item(StringToSlot((string)row[k]), StringToStatus((string)row[k + 2])));
+                        assignedName.Add((string)row[k + 3]);
+                    }
                 }
 
                 if (!findingItems)
@@ -142,7 +150,30 @@ namespace TierDistribution
                 //Console.WriteLine("\n");
             }
 
+            //Assign the already assigned loot
+            for(int l = 0; l < assignedLoot.Count; l++)
+            {
+                if (assignedLoot[l].slot != Slot.Omni)
+                {
+                    StringToRaider(assignedName[l], raid).updateGear(assignedLoot[l]);
+                }
+            }
+
+
             return (raid,newLoot);
+        }
+
+        public static Raider StringToRaider(string str, List<Raider>[] raid)
+        {
+            for(int i = 0; i < raid.Length; i++)
+            {
+                foreach(Raider raider in raid[i]) 
+                {
+                    if (raider.name == str) return raider;
+                }
+            }
+            Console.WriteLine("Couldnt find raider with name in assigned loot");
+            return null;
         }
 
         private static int StringToToken(string str)

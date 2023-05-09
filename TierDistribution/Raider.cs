@@ -108,6 +108,17 @@ namespace TierDistribution
             baseFitness = CalcFitness();
         }
 
+        public void updateGear(Item newItem)
+        {
+            gear[(int)newItem.slot] = newItem.status;
+            newGear[(int)newItem.slot] = newItem.status;
+
+            numberOfTier = CalculateNumberOfTier();
+
+            baseFitness = CalcFitness();
+
+        }
+
         public void GiveItem(Item item)
         {
             loot.Add(item);
